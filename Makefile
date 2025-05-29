@@ -1,5 +1,7 @@
 PROJECT=boot
 CPU ?= cortex-m4
+OPENOCD = openocd
+OPENOCD_CFG = -f tm4c123g.cfg
 
 qemu:
 	arm-none-eabi-as -mthumb -mcpu=$(CPU) -ggdb -c boot.S -o boot.o
@@ -10,6 +12,12 @@ qemu:
 
 gdb:
 	gdb-multiarch -q $(PROJECT).elf -ex "target remote localhost:1234"
+
+flash: $(PROJECT).bin
+    $(OPENOCD) $(OPENOCD_CFG) -c "program $< verify reset exit"
+
+debug:
+    $(OPENOCD) $(OPENOCD_CFG) &
 
 clean:
 	rm -rf *.out *.elf .gdb_history *.lst *.debug *.o
