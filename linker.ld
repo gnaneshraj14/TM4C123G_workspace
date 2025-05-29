@@ -1,22 +1,17 @@
-ENTRY(_boot)
-
 MEMORY
 {
-    RAM (xrw) : ORIGIN = 0x20000000, LENGTH = 0x800
-    VECTORS (rx) : ORIGIN = 0x00000000, LENGTH = 0x100
+    FLASH : ORIGIN = 0x00000000, LENGTH = 0x4000
+    RAM : ORIGIN = 0x20000000, LENGTH = 0x8000
 }
 
 SECTIONS
 {
-    .isr_vector : {
-        KEEP(*(.isr_vector))
-    } > VECTORS
-
     .text : {
+        *(.vectors*)
         *(.text*)
-        *(.rodata*)
-    } > RAM
+    } > FLASH
 
-    .data : { *(.data*) } > RAM
-    .bss : { *(.bss*) *(COMMON) } > RAM
+    .data : {
+        *(.data*)
+    } > RAM
 }
