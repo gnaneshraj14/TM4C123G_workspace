@@ -17,38 +17,40 @@ reset_handler:
     .cpu cortex-m4
     .thumb
 
+    /* Vector table */
     .section .vectors, "a", %progbits
     .align  2
-    .word   _estack           /* initial stack pointer */
+    .word   _estack           /* initial SP */
     .word   reset_handler     /* reset vector */
-    /* .word   NMI_Handler
-       .word   HardFault_Handler
-       ... etc ... */
 
+    /* Reset handler */
     .section .text
     .align  1
     .global reset_handler
-    .type reset_handler, %function
+    .type   reset_handler, %function
 reset_handler:
-    /* 1. copy .data from flash to RAM */
-    ldr   r0, =__etext
-    ldr   r1, =__data_start__
+    /* Copy .data from flash (at __etext) to RAM (from __data_start__ to __data_end__) */
+    ldr   r0, =__etext        /* source in FLASH */
+    ldr   r1, =__data_start__ /* dest in SRAM */
     ldr   r2, =__data_end__
-1:  cmp   r1, r2
+copy_loop:
+    cmp   r1, r2
     ittt  lt
-    ldrlt r3, [r0], #4
-    strlt r3, [r1], #4
-    blt   1b
+    ldrlt r3, [r0], #4        /* r3 = *r0; r0 += 4 */
+    strlt r3, [r1], #4        /* *r1 = r3; r1 += 4 */
+    blt   copy_loop
 
-    /* 2. zero .bss */
+    /* Zero .bss (from __bss_start__ to __bss_end__) */
     ldr   r0, =__bss_start__
     ldr   r1, =__bss_end__
-2:  cmp   r0, r1
-    it   lt
-    strlt r0, [r0], #4
-    blt   2b
+    movs  r3, #0              /* prepare zero in r3 */
+bss_loop:
+    cmp   r0, r1
+    it    lt
+    strlt r3, [r0], #4        /* *r0 = 0; r0 += 4 */
+    blt   bss_loop
 
-    /* 3. call main() */
+    /* Call main() */
     bl    main
 
 hang:
