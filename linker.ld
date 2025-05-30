@@ -1,4 +1,10 @@
 /* linker.ld */
+
+/* Full flash size: your 0x4000 (16 KB) was too small—TM4C123G has 256 KB of flash.
+Data load address: AT> FLASH ensures .data is copied at reset from flash to SRAM.
+Symbols for C init: giving you __etext, __data_start__, etc., for the runtime copy/zero loops.
+Stack limits: defining _estack and even optionally a __stack_limit for basic overflow checks. */
+
 MEMORY
 {
     FLASH (rx) : ORIGIN = 0x00000000, LENGTH = 256K
@@ -44,4 +50,3 @@ SECTIONS
       PROVIDE(__stack_limit = .);
     } > RAM
 }
-

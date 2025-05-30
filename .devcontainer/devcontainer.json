@@ -30,6 +30,7 @@
                 }
         },
         "extensions": [
+            "marus25.cortex-debug",
             "ZixuanWang.linkerscript",
             "ms-vscode.cpptools",
             "davidbwaters.macos-modern-theme",
@@ -37,7 +38,7 @@
             "ms-vscode.hexeditor",
             "trond-snekvik.gnu-mapfiles",
             "joshuabernstein.armextensionhelpers"
-            ]
+        ]
         }
     },
     "postCreateCommand": "pip3 install pygments && wget -P ~ https://git.io/.gdbinit"
